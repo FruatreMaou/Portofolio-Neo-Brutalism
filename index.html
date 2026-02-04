@@ -3,23 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fruatre Maou | Developer Portfolio</title>
+    <title>Fruatre Maou | Dev × Anime Enthusiast</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --black: #0a0a0a;
             --white: #ffffff;
-            --cream: #f5f5f0;
-            --accent: #ff3300;
+            --cream: #f0f0e8;
+            --accent: #ff2a2a;
+            --elaina: #9b59b6;
+            --sinon: #3498db;
+            --shinoa: #2ecc71;
             --border-width: 3px;
+            --glitch: #00ff00;
+            --cyber: #00f0ff;
+        }
+
+        [data-theme="dark"] {
+            --cream: #0a0a0a;
+            --white: #1a1a1a;
+            --black: #ffffff;
+            --accent: #00f0ff;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: none;
         }
 
         html {
@@ -32,6 +45,184 @@
             color: var(--black);
             line-height: 1.6;
             overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-text {
+            color: var(--white);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .loader-bar {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--white);
+        }
+
+        .loader-progress {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s;
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .loader-waifu {
+            position: absolute;
+            bottom: 2rem;
+            color: var(--white);
+            font-size: 0.9rem;
+            opacity: 0.6;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s, border-color 0.2s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 42, 42, 0.1);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .cursor-follower {
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .cursor.hover {
+            transform: scale(2);
+            background: var(--accent);
+        }
+
+        /* Background Particles */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--white);
+            border: var(--border-width) solid var(--black);
+            box-shadow: 4px 4px 0 var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--accent);
+        }
+
+        /* Notification Toast */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            left: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .toast {
+            background: var(--white);
+            border: var(--border-width) solid var(--black);
+            box-shadow: 6px 6px 0 var(--black);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateX(-150%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .toast-message {
+            font-size: 0.8rem;
+            opacity: 0.8;
         }
 
         /* Brutalist Utilities */
@@ -39,12 +230,26 @@
             border: var(--border-width) solid var(--black);
             background: var(--white);
             box-shadow: 8px 8px 0px 0px var(--black);
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .brutal-box:hover {
             transform: translate(-4px, -4px);
             box-shadow: 12px 12px 0px 0px var(--black);
+        }
+
+        .brutal-box.glitch:hover {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            box-shadow: 12px 12px 0px 0px var(--glitch);
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
         }
 
         .brutal-btn {
@@ -56,21 +261,47 @@
             text-decoration: none;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             box-shadow: 6px 6px 0px 0px var(--accent);
             transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brutal-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .brutal-btn:hover::before {
+            left: 0;
         }
 
         .brutal-btn:hover {
             transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0px 0px var(--accent);
-            background: var(--accent);
+            box-shadow: 8px 8px 0px 0px var(--black);
+            color: var(--white);
         }
 
         .brutal-btn-secondary {
             background: var(--white);
             color: var(--black);
             box-shadow: 6px 6px 0px 0px var(--black);
+        }
+
+        .brutal-btn-secondary::before {
+            background: var(--black);
+        }
+
+        .brutal-btn-secondary:hover {
+            color: var(--white);
         }
 
         /* Navigation */
@@ -82,6 +313,12 @@
             border-bottom: var(--border-width) solid var(--black);
             z-index: 1000;
             padding: 1rem 2rem;
+            transition: all 0.3s;
+        }
+
+        [data-theme="dark"] nav {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
         }
 
         .nav-container {
@@ -96,6 +333,21 @@
             font-size: 1.5rem;
             font-weight: 700;
             letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: '◈';
+            color: var(--accent);
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .logo span {
@@ -113,9 +365,10 @@
             color: var(--black);
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             position: relative;
             padding: 0.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .nav-links a::after {
@@ -133,23 +386,77 @@
             width: 100%;
         }
 
+        /* Live Clock */
+        .live-clock {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: var(--white);
+            border: var(--border-width) solid var(--black);
+            box-shadow: 4px 4px 0 var(--black);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 999;
+            text-align: center;
+        }
+
+        .clock-time {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .clock-date {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.2rem;
+        }
+
         /* Hero Section */
         .hero {
             margin-top: 80px;
             padding: 4rem 2rem;
-            min-height: 90vh;
+            min-height: 95vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            background: linear-gradient(135deg, var(--cream) 0%, #e8e8e0 100%);
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .hero {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 42, 42, 0.03) 10px,
+                rgba(255, 42, 42, 0.03) 20px
+            );
+            transform: rotate(15deg);
+            pointer-events: none;
         }
 
         .hero-content {
             max-width: 1400px;
             width: 100%;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.2fr 1fr;
             gap: 4rem;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
 
         .hero-text h1 {
@@ -158,23 +465,80 @@
             font-weight: 700;
             margin-bottom: 1rem;
             letter-spacing: -3px;
+            position: relative;
+        }
+
+        .hero-text h1::after {
+            content: '_';
+            animation: blink 1s infinite;
+            color: var(--accent);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
         }
 
         .hero-text .subtitle {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 500;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .hero-text .bio-short {
+        .hero-text .subtitle::before {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: var(--black);
+            max-width: 100px;
+        }
+
+        .typing-text {
+            font-family: 'JetBrains Mono', monospace;
             font-size: 1.1rem;
             margin-bottom: 2rem;
-            max-width: 500px;
+            max-width: 600px;
             padding: 1.5rem;
             border-left: 6px solid var(--black);
             background: var(--white);
+            position: relative;
+        }
+
+        .typing-text::before {
+            content: '>';
+            position: absolute;
+            left: -25px;
+            top: 1.5rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .anime-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--black);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2rem;
+            border: 2px solid var(--black);
+            box-shadow: 4px 4px 0 var(--accent);
+        }
+
+        .anime-badge::before {
+            content: '▸';
+            color: var(--accent);
         }
 
         .hero-visual {
@@ -187,11 +551,73 @@
             border: var(--border-width) solid var(--black);
             box-shadow: 12px 12px 0px 0px var(--black);
             transform: rotate(2deg);
+            position: relative;
+        }
+
+        .hero-box::after {
+            content: 'ANIME_DEV';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--accent);
+            color: var(--white);
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: 2px solid var(--black);
         }
 
         .hero-box:hover {
             transform: rotate(0deg) scale(1.02);
             box-shadow: 16px 16px 0px 0px var(--accent);
+        }
+
+        .waifu-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .waifu-mini {
+            aspect-ratio: 1;
+            border: 2px solid var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: var(--cream);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .waifu-mini::before {
+            content: attr(data-name);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--black);
+            color: var(--white);
+            font-size: 0.6rem;
+            padding: 0.2rem;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.2s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .waifu-mini:hover::before {
+            transform: translateY(0);
+        }
+
+        .waifu-mini:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 0 var(--black);
         }
 
         .stats-grid {
@@ -205,12 +631,26 @@
             padding: 1rem;
             border: 2px solid var(--black);
             text-align: center;
+            background: var(--white);
+            transition: all 0.2s;
+        }
+
+        .stat-item:hover {
+            background: var(--black);
+            color: var(--white);
+            transform: translateY(-2px);
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             display: block;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+        }
+
+        .stat-item:hover .stat-number {
+            color: var(--accent);
         }
 
         /* Section General */
@@ -218,6 +658,8 @@
             padding: 5rem 2rem;
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
 
         .section-header {
@@ -227,6 +669,17 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: var(--accent);
         }
 
         .section-title {
@@ -234,12 +687,210 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: -2px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .section-number {
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            border: 2px solid var(--accent);
+            padding: 0.2rem 0.6rem;
+        }
+
+        /* Live Terminal */
+        .terminal-window {
+            background: #1a1a1a;
+            border: var(--border-width) solid var(--black);
+            box-shadow: 8px 8px 0 var(--accent);
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #333;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--black);
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--black);
+        }
+
+        .terminal-btn.red { background: #ff5f56; }
+        .terminal-btn.yellow { background: #ffbd2e; }
+        .terminal-btn.green { background: #27c93f; }
+
+        .terminal-title {
+            margin-left: 1rem;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: #00ff00;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .terminal-line.show {
+            opacity: 1;
+        }
+
+        .terminal-prompt {
+            color: #ff5f56;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background: #00ff00;
+            animation: blink-cursor 0.8s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink-cursor {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* GitHub Graph */
+        .github-graph {
+            display: grid;
+            grid-template-columns: repeat(52, 1fr);
+            gap: 3px;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--white);
+            border: var(--border-width) solid var(--black);
+            box-shadow: 6px 6px 0 var(--black);
+            overflow-x: auto;
+        }
+
+        .graph-cell {
+            aspect-ratio: 1;
+            background: #ebedf0;
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        [data-theme="dark"] .graph-cell {
+            background: #161b22;
+            border-color: #30363d;
+        }
+
+        .graph-cell:hover {
+            transform: scale(1.5);
+            z-index: 10;
+            border: 1px solid var(--black);
+        }
+
+        .graph-cell.level-1 { background: #9be9a8; }
+        .graph-cell.level-2 { background: #40c463; }
+        .graph-cell.level-3 { background: #30a14e; }
+        .graph-cell.level-4 { background: #216e39; }
+
+        [data-theme="dark"] .graph-cell.level-1 { background: #0e4429; }
+        [data-theme="dark"] .graph-cell.level-2 { background: #006d32; }
+        [data-theme="dark"] .graph-cell.level-3 { background: #26a641; }
+        [data-theme="dark"] .graph-cell.level-4 { background: #39d353; }
+
+        /* Skill Tree */
+        .skill-tree {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .skill-category {
+            background: var(--white);
+            border: var(--border-width) solid var(--black);
+            box-shadow: 6px 6px 0 var(--black);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .skill-category::before {
+            content: attr(data-level);
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--accent);
+            color: var(--white);
+            padding: 0.2rem 0.8rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            border: 2px solid var(--black);
+        }
+
+        .skill-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .skill-item:last-child {
+            border-bottom: none;
+        }
+
+        .skill-name {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .skill-bar {
+            width: 100px;
+            height: 8px;
+            background: rgba(0,0,0,0.1);
+            border: 1px solid var(--black);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: var(--accent);
+            transition: width 1s ease;
         }
 
         /* Journey/Timeline */
@@ -266,6 +917,12 @@
             background: var(--white);
             border: var(--border-width) solid var(--black);
             box-shadow: 6px 6px 0px 0px var(--black);
+            transition: all 0.2s;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(10px);
+            box-shadow: 8px 8px 0px 0px var(--accent);
         }
 
         .timeline-item::before {
@@ -288,12 +945,404 @@
             font-weight: 700;
             margin-bottom: 0.5rem;
             font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .timeline-item h3 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
             text-transform: uppercase;
+        }
+
+        /* WAIFU SECTION */
+        .waifu-section {
+            background: var(--black);
+            color: var(--white);
+            padding: 5rem 2rem;
+            margin: 0;
+            max-width: 100%;
+        }
+
+        [data-theme="dark"] .waifu-section {
+            background: #0f0f0f;
+        }
+
+        .waifu-section .section-header {
+            border-color: var(--white);
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+        }
+
+        .waifu-section .section-title {
+            color: var(--white);
+        }
+
+        .waifu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .waifu-card {
+            background: var(--white);
+            border: var(--border-width) solid var(--white);
+            box-shadow: 8px 8px 0px 0px var(--accent);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .waifu-card:hover {
+            transform: translate(-6px, -6px);
+            box-shadow: 14px 14px 0px 0px var(--glitch);
+        }
+
+        .waifu-header {
+            padding: 1.5rem;
+            border-bottom: var(--border-width) solid var(--black);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .waifu-header.elaina { background: var(--elaina); color: var(--white); }
+        .waifu-header.sinon { background: var(--sinon); color: var(--white); }
+        .waifu-header.shinoa { background: var(--shinoa); color: var(--black); }
+
+        .waifu-rank {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--black);
+            color: var(--white);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: 2px solid var(--white);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+        }
+
+        .waifu-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 0.3rem;
+        }
+
+        .waifu-anime {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .waifu-body {
+            padding: 1.5rem;
+            background: var(--white);
+            color: var(--black);
+        }
+
+        .waifu-quote {
+            font-style: italic;
+            border-left: 4px solid var(--black);
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .waifu-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .waifu-stat {
+            text-align: center;
+            padding: 0.5rem;
+            border: 2px solid var(--black);
+            font-size: 0.8rem;
+        }
+
+        .waifu-stat-value {
+            display: block;
+            font-weight: 700;
+            font-size: 1.1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Achievement Badges */
+        .achievements {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .achievement {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--white);
+            border: 2px solid var(--black);
+            box-shadow: 4px 4px 0 var(--black);
+            transition: all 0.2s;
+        }
+
+        .achievement:hover {
+            transform: translateY(-4px);
+            box-shadow: 6px 6px 0 var(--accent);
+        }
+
+        .achievement-icon {
+            font-size: 1.5rem;
+        }
+
+        .achievement-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .achievement-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .achievement-desc {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        /* ANIME WATCHLIST */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .anime-item {
+            border: var(--border-width) solid var(--black);
+            background: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 4px 4px 0 var(--black);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .anime-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.2s;
+        }
+
+        .anime-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .anime-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 8px 8px 0 var(--accent);
+        }
+
+        .anime-emoji {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            transition: transform 0.2s;
+        }
+
+        .anime-item:hover .anime-emoji {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .anime-name {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .anime-genre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+
+        .anime-rating {
+            margin-top: 0.5rem;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        /* Music Player Widget */
+        .music-player {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 300px;
+            background: var(--white);
+            border: var(--border-width) solid var(--black);
+            box-shadow: 6px 6px 0 var(--black);
+            z-index: 998;
+            transform: translateY(calc(100% + 40px));
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .music-player.open {
+            transform: translateY(0);
+        }
+
+        .music-toggle {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border: var(--border-width) solid var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--black);
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .music-header {
+            padding: 1rem;
+            background: var(--black);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .music-cover {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border: 2px solid var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            animation: spin-slow 10s linear infinite;
+        }
+
+        .music-cover.paused {
+            animation-play-state: paused;
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .music-info {
+            flex: 1;
+        }
+
+        .music-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .music-artist {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .music-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-top: 2px solid var(--black);
+        }
+
+        .music-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--black);
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+        }
+
+        .music-btn:hover {
+            background: var(--accent);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .music-btn.play {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .music-progress {
+            height: 4px;
+            background: rgba(0,0,0,0.1);
+            margin: 0 1rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .music-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+
+        .music-playlist {
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 2px solid var(--black);
+        }
+
+        .playlist-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .playlist-item:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .playlist-item.active {
+            background: var(--accent);
+            color: var(--white);
         }
 
         /* Projects Grid */
@@ -314,6 +1363,29 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            position: relative;
+        }
+
+        .project-card::after {
+            content: '↗';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 30px;
+            height: 30px;
+            background: var(--accent);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.2s;
+            border: 2px solid var(--black);
+        }
+
+        .project-card:hover::after {
+            opacity: 1;
         }
 
         .project-card:hover {
@@ -329,8 +1401,8 @@
         }
 
         .project-domain {
-            font-family: monospace;
-            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
             opacity: 0.8;
             margin-bottom: 0.5rem;
         }
@@ -365,35 +1437,13 @@
             text-transform: uppercase;
             margin-right: 0.5rem;
             margin-top: 0.5rem;
-        }
-
-        /* Tools Section */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .tool-item {
-            padding: 2rem 1rem;
-            text-align: center;
-            background: var(--white);
-            border: var(--border-width) solid var(--black);
-            box-shadow: 4px 4px 0px 0px var(--black);
+            background: var(--cream);
             transition: all 0.2s;
         }
 
-        .tool-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 6px 6px 0px 0px var(--accent);
+        .project-tag:hover {
             background: var(--black);
             color: var(--white);
-        }
-
-        .tool-name {
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-transform: uppercase;
         }
 
         /* Contact Section */
@@ -405,9 +1455,10 @@
         }
 
         .contact-info h3 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 1rem;
             text-transform: uppercase;
+            line-height: 1;
         }
 
         .contact-links {
@@ -439,10 +1490,11 @@
         }
 
         .contact-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             opacity: 0.7;
             margin-bottom: 0.2rem;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .contact-value {
@@ -456,16 +1508,47 @@
             color: var(--white);
             border: var(--border-width) solid var(--black);
             box-shadow: 12px 12px 0px 0px var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 20px,
+                rgba(255, 42, 42, 0.05) 20px,
+                rgba(255, 42, 42, 0.05) 40px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .cta-box > * {
+            position: relative;
+            z-index: 1;
         }
 
         .cta-box h3 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 1rem;
+            text-transform: uppercase;
         }
 
         .cta-box p {
             margin-bottom: 2rem;
             font-size: 1.1rem;
+            line-height: 1.6;
         }
 
         /* Footer */
@@ -475,11 +1558,14 @@
             text-align: center;
             background: var(--black);
             color: var(--white);
+            position: relative;
         }
 
         .footer-content {
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
 
         .footer-logo {
@@ -487,11 +1573,50 @@
             font-weight: 700;
             margin-bottom: 1rem;
             letter-spacing: -3px;
+            text-transform: uppercase;
         }
 
         .footer-text {
             font-size: 0.9rem;
             opacity: 0.8;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .footer-quote {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .easter-egg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border: 3px solid var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 4px 4px 0 var(--black);
+            transition: all 0.2s;
+        }
+
+        .easter-egg:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .easter-egg.active {
+            animation: spin 1s ease;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
         }
 
         /* Mobile Responsive */
@@ -513,6 +1638,14 @@
                 grid-template-columns: 1fr;
             }
 
+            .waifu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .anime-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .nav-links {
                 display: none;
             }
@@ -522,6 +1655,32 @@
                 font-size: 1.5rem;
                 cursor: pointer;
             }
+
+            * {
+                cursor: auto;
+            }
+
+            .cursor, .cursor-follower {
+                display: none;
+            }
+
+            .theme-toggle, .live-clock, .music-player {
+                display: none;
+            }
+
+            .github-graph {
+                overflow-x: scroll;
+            }
+
+            .toast-container {
+                left: 10px;
+                right: 10px;
+                top: 80px;
+            }
+
+            .toast {
+                max-width: 100%;
+            }
         }
 
         @media (min-width: 969px) {
@@ -530,66 +1689,72 @@
             }
         }
 
-        /* Animations */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-in {
-            animation: slideIn 0.6s ease-out forwards;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--cream);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--black);
-            border: 3px solid var(--cream);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
+        /* Selection */
+        ::selection {
             background: var(--accent);
+            color: var(--white);
         }
     </style>
+<base target="_blank">
 </head>
 <body>
+
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader-text">INITIALIZING SYSTEM...</div>
+        <div class="loader-bar">
+            <div class="loader-progress" id="loader-progress"></div>
+        </div>
+        <div class="loader-waifu">Loading waifu database...</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
+        <span id="theme-icon">🌙</span>
+    </div>
+
+    <!-- Live Clock -->
+    <div class="live-clock">
+        <div class="clock-time" id="clock">00:00:00</div>
+        <div class="clock-date" id="date">JAKARTA WIB</div>
+    </div>
+
+    <!-- Background Particles -->
+    <canvas id="particles-canvas"></canvas>
 
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
             <div class="logo">FRUATRE<span>.</span>MAOU</div>
             <ul class="nav-links">
-                <li><a href="#about">Tentang</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#waifus">Waifus</a></li>
+                <li><a href="#skills">Skills</a></li>
                 <li><a href="#journey">Journey</a></li>
                 <li><a href="#projects">Projects</a></li>
-                <li><a href="#tools">Tools</a></li>
-                <li><a href="#contact">Kontak</a></li>
+                <li><a href="#anime">Anime</a></li>
+                <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="mobile-menu">☰</div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="about">
         <div class="hero-content">
             <div class="hero-text">
+                <div class="anime-badge">Developer × Weeb</div>
                 <h1>CAHYA CIPTA<br>MAULADIN</h1>
-                <div class="subtitle">Full Stack Developer & Bot Creator</div>
-                <div class="bio-short">
-                    <strong>Known as Fruatre Maou</strong> — Kelas 12 SMK Jakarta yang terjun ke dunia IT sejak 2023. Specializing in web development, WhatsApp automation, dan scraping. Anime enthusiast & tech explorer.
+                <div class="subtitle">Full Stack Developer</div>
+                <div class="typing-text" id="typing-text">
+                    <strong>Known as Fruatre Maou</strong> — Kelas 12 SMK Jakarta yang terjun ke dunia IT sejak 2023. Specializing in web development, WhatsApp automation, dan scraping. 
                 </div>
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                     <a href="#projects" class="brutal-btn">Lihat Project</a>
@@ -600,16 +1765,23 @@
             <div class="hero-visual">
                 <div class="hero-box">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">👨‍💻</div>
-                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">JAKARTA, 2007</h2>
-                    <p style="margin-bottom: 1.5rem;">Building digital solutions with brutalist precision.</p>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; text-transform: uppercase;">Jakarta, 2007</h2>
+                    <p style="margin-bottom: 1.5rem; font-size: 0.95rem;">Building digital solutions with brutalist precision & anime soul.</p>
+                    
+                    <div class="waifu-mini-grid">
+                        <div class="waifu-mini" data-name="Elaina" onclick="showWaifuToast('Elaina')" style="color: var(--elaina);">🧙‍♀️</div>
+                        <div class="waifu-mini" data-name="Sinon" onclick="showWaifuToast('Sinon')" style="color: var(--sinon);">🎯</div>
+                        <div class="waifu-mini" data-name="Shinoa" onclick="showWaifuToast('Shinoa')" style="color: var(--shinoa);">⚔️</div>
+                    </div>
+
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <span class="stat-number">7</span>
-                            <span style="font-size: 0.8rem; text-transform: uppercase;">Live Projects</span>
+                            <span class="stat-number">7+</span>
+                            <span style="font-size: 0.75rem; text-transform: uppercase;">Live Projects</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">3</span>
-                            <span style="font-size: 0.8rem; text-transform: uppercase;">Years Exp</span>
+                            <span class="stat-number">∞</span>
+                            <span style="font-size: 0.75rem; text-transform: uppercase;">Anime Watched</span>
                         </div>
                     </div>
                 </div>
@@ -617,7 +1789,291 @@
         </div>
     </section>
 
-    <!-- About/Journey Section -->
+    <!-- Live Terminal -->
+    <section id="terminal">
+        <div class="section-header">
+            <h2 class="section-title">Live Terminal</h2>
+            <span class="section-number">>_</span>
+        </div>
+        
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-btn red"></div>
+                <div class="terminal-btn yellow"></div>
+                <div class="terminal-btn green"></div>
+                <div class="terminal-title">fruatre@maou: ~</div>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+                <div class="terminal-line show">
+                    <span class="terminal-prompt">➜</span> Initializing system...
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WAIFU SECTION -->
+    <section class="waifu-section" id="waifus">
+        <div class="section-header">
+            <h2 class="section-title">Top 3 Waifu</h2>
+            <span class="section-number">#S Tier</span>
+        </div>
+
+        <div class="waifu-grid">
+            <div class="waifu-card brutal-box glitch" onclick="celebrateWaifu('Elaina')">
+                <div class="waifu-header elaina">
+                    <div class="waifu-rank">01</div>
+                    <div class="waifu-title">Elaina</div>
+                    <div class="waifu-anime">Majo no Tabitabi</div>
+                </div>
+                <div class="waifu-body">
+                    <div class="waifu-quote">
+                        "That cute and beautiful traveling witch is none other than me. Yes, it's me!"
+                    </div>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        The Ashen Witch dengan rambut abu-abu perak dan sifat yang sedikit narsis tapi charming. traveler sejati yang menjelajahi dunia sambil cerita & ngeteh 🍵
+                    </p>
+                    <div class="waifu-stats">
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">S+</span>
+                            <span style="font-size: 0.7rem;">Waifu Tier</span>
+                        </div>
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">Magic</span>
+                            <span style="font-size: 0.7rem;">Class</span>
+                        </div>
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">99%</span>
+                            <span style="font-size: 0.7rem;">Best Girl</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="waifu-card brutal-box glitch" onclick="celebrateWaifu('Sinon')">
+                <div class="waifu-header sinon">
+                    <div class="waifu-rank">02</div>
+                    <div class="waifu-title">Sinon</div>
+                    <div class="waifu-anime">Sword Art Online</div>
+                </div>
+                <div class="waifu-body">
+                    <div class="waifu-quote">
+                        "I will fight to protect the things I don't want to lose."
+                    </div>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        Sniper legendaris dengan traumatis past tapi mental baja. Badass, cool, dan aimnya nggak pernah miss. Sinon = tactical waifu material 🎯
+                    </p>
+                    <div class="waifu-stats">
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">S</span>
+                            <span style="font-size: 0.7rem;">Waifu Tier</span>
+                        </div>
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">Sniper</span>
+                            <span style="font-size: 0.7rem;">Class</span>
+                        </div>
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">100%</span>
+                            <span style="font-size: 0.7rem;">Headshot</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="waifu-card brutal-box glitch" onclick="celebrateWaifu('Shinoa')">
+                <div class="waifu-header shinoa">
+                    <div class="waifu-rank">03</div>
+                    <div class="waifu-title">Shinoa</div>
+                    <div class="waifu-anime">Seraph of the End</div>
+                </div>
+                <div class="waifu-body">
+                    <div class="waifu-quote">
+                        "I'm not a good person. I'm just good at pretending to be one."
+                    </div>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        Demon weapon wielder dengan sifat playful tapi deadly. Leader squad yang pintar manipulatif dan punya senyum licik tapi protect ke temen-temennya 💚
+                    </p>
+                    <div class="waifu-stats">
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">S</span>
+                            <span style="font-size: 0.7rem;">Waifu Tier</span>
+                        </div>
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">Spear</span>
+                            <span style="font-size: 0.7rem;">Class</span>
+                        </div>
+                        <div class="waifu-stat">
+                            <span class="waifu-stat-value">95%</span>
+                            <span style="font-size: 0.7rem;">Troll Level</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GitHub Contribution Graph -->
+    <section id="github">
+        <div class="section-header">
+            <h2 class="section-title">Coding Activity</h2>
+            <span class="section-number"># commits</span>
+        </div>
+        
+        <div class="github-graph" id="github-graph">
+            <!-- Generated by JS -->
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">
+            <span>Less</span>
+            <div style="display: flex; gap: 4px;">
+                <div style="width: 12px; height: 12px; background: #ebedf0; border: 1px solid var(--black);"></div>
+                <div style="width: 12px; height: 12px; background: #9be9a8; border: 1px solid var(--black);"></div>
+                <div style="width: 12px; height: 12px; background: #40c463; border: 1px solid var(--black);"></div>
+                <div style="width: 12px; height: 12px; background: #30a14e; border: 1px solid var(--black);"></div>
+                <div style="width: 12px; height: 12px; background: #216e39; border: 1px solid var(--black);"></div>
+            </div>
+            <span>More</span>
+        </div>
+    </section>
+
+    <!-- Skill Tree RPG -->
+    <section id="skills">
+        <div class="section-header">
+            <h2 class="section-title">Skill Tree</h2>
+            <span class="section-number"># RPG</span>
+        </div>
+
+        <div class="skill-tree">
+            <div class="skill-category" data-level="LV.99">
+                <div class="skill-title">⚔️ Frontend</div>
+                <div class="skill-item">
+                    <span class="skill-name">HTML/CSS</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 95%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">JavaScript</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 90%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">TypeScript</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 75%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">React/Vue</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 70%"></div></div>
+                </div>
+            </div>
+
+            <div class="skill-category" data-level="LV.85">
+                <div class="skill-title">⚙️ Backend</div>
+                <div class="skill-item">
+                    <span class="skill-name">Node.js</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 88%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Express</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 82%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">MongoDB</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 78%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">REST API</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                </div>
+            </div>
+
+            <div class="skill-category" data-level="LV.90">
+                <div class="skill-title">🤖 Automation</div>
+                <div class="skill-item">
+                    <span class="skill-name">WhatsApp Bot</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 92%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Web Scraping</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 88%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Puppeteer</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 80%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Cheerio</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 85%"></div></div>
+                </div>
+            </div>
+
+            <div class="skill-category" data-level="LV.80">
+                <div class="skill-title">🎨 Design</div>
+                <div class="skill-item">
+                    <span class="skill-name">UI/UX</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 75%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Figma</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 70%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Brutalism</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 95%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Anime Aesthetic</span>
+                    <div class="skill-bar"><div class="skill-progress" style="width: 100%"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements -->
+        <div style="margin-top: 3rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; text-transform: uppercase;">🏆 Achievements</h3>
+            <div class="achievements">
+                <div class="achievement">
+                    <span class="achievement-icon">🌙</span>
+                    <div class="achievement-info">
+                        <span class="achievement-title">Night Owl</span>
+                        <span class="achievement-desc">Code sampai subuh</span>
+                    </div>
+                </div>
+                <div class="achievement">
+                    <span class="achievement-icon">☕</span>
+                    <div class="achievement-info">
+                        <span class="achievement-title">Caffeine Addict</span>
+                        <span class="achievement-desc">Minum 3+ kopi sehari</span>
+                    </div>
+                </div>
+                <div class="achievement">
+                    <span class="achievement-icon">🎯</span>
+                    <div class="achievement-info">
+                        <span class="achievement-title">Sniper</span>
+                        <span class="achievement-desc">Bug fixed in 1 shot</span>
+                    </div>
+                </div>
+                <div class="achievement">
+                    <span class="achievement-icon">🧙‍♀️</span>
+                    <div class="achievement-info">
+                        <span class="achievement-title">Archmage</span>
+                        <span class="achievement-desc">Master 7+ projects</span>
+                    </div>
+                </div>
+                <div class="achievement">
+                    <span class="achievement-icon">🎌</span>
+                    <div class="achievement-info">
+                        <span class="achievement-title">Weeb Lord</span>
+                        <span class="achievement-desc">Watch 100+ anime</span>
+                    </div>
+                </div>
+                <div class="achievement">
+                    <span class="achievement-icon">⚡</span>
+                    <div class="achievement-info">
+                        <span class="achievement-title">Speed Demon</span>
+                        <span class="achievement-desc">Deploy in 24h</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Journey Section -->
     <section id="journey">
         <div class="section-header">
             <h2 class="section-title">My Journey</h2>
@@ -761,41 +2217,85 @@
         </div>
     </section>
 
-    <!-- Tools Section -->
-    <section id="tools">
+    <!-- ANIME WATCHLIST SECTION -->
+    <section id="anime">
         <div class="section-header">
-            <h2 class="section-title">Tech Arsenal</h2>
+            <h2 class="section-title">Anime Favorites</h2>
             <span class="section-number">#03</span>
         </div>
 
-        <div class="tools-grid">
-            <div class="tool-item">
-                <div class="tool-name">Termius</div>
-                <small>SSH/SFTP Client</small>
+        <div class="anime-grid">
+            <div class="anime-item" onclick="playAnimeOST('SAO')">
+                <span class="anime-emoji">🗡️</span>
+                <div class="anime-name">SAO</div>
+                <div class="anime-genre">Isekai/Action</div>
+                <div class="anime-rating">★★★★☆</div>
             </div>
-            <div class="tool-item">
-                <div class="tool-name">Termux</div>
-                <small>Terminal Android</small>
+            <div class="anime-item" onclick="playAnimeOST('Majo no Tabitabi')">
+                <span class="anime-emoji">🧙‍♀️</span>
+                <div class="anime-name">Majo no Tabitabi</div>
+                <div class="anime-genre">Adventure/Fantasy</div>
+                <div class="anime-rating">★★★★★</div>
             </div>
-            <div class="tool-item">
-                <div class="tool-name">GitHub</div>
-                <small>Version Control</small>
+            <div class="anime-item" onclick="playAnimeOST('Seraph')">
+                <span class="anime-emoji">⚔️</span>
+                <div class="anime-name">Seraph of the End</div>
+                <div class="anime-genre">Action/Supernatural</div>
+                <div class="anime-rating">★★★★☆</div>
             </div>
-            <div class="tool-item">
-                <div class="tool-name">Acode</div>
-                <small>Mobile Editor</small>
+            <div class="anime-item" onclick="playAnimeOST('Bocchi')">
+                <span class="anime-emoji">🎸</span>
+                <div class="anime-name">Bocchi the Rock!</div>
+                <div class="anime-genre">Music/Slice of Life</div>
+                <div class="anime-rating">★★★★★</div>
             </div>
-            <div class="tool-item" style="grid-column: span 2;">
-                <div class="tool-name">JavaScript / TypeScript</div>
-                <small>Primary Languages</small>
+            <div class="anime-item" onclick="playAnimeOST('Death Note')">
+                <span class="anime-emoji">🧠</span>
+                <div class="anime-name">Death Note</div>
+                <div class="anime-genre">Psychological</div>
+                <div class="anime-rating">★★★★★</div>
             </div>
-            <div class="tool-item">
-                <div class="tool-name">HTML5</div>
-                <small>Structure</small>
+            <div class="anime-item" onclick="playAnimeOST('Naruto')">
+                <span class="anime-emoji">⚡</span>
+                <div class="anime-name">Naruto</div>
+                <div class="anime-genre">Shounen/Ninja</div>
+                <div class="anime-rating">★★★★☆</div>
             </div>
-            <div class="tool-item">
-                <div class="tool-name">CSS3</div>
-                <small>Styling</small>
+            <div class="anime-item" onclick="playAnimeOST('Ippo')">
+                <span class="anime-emoji">🥊</span>
+                <div class="anime-name">Hajime no Ippo</div>
+                <div class="anime-genre">Sports/Boxing</div>
+                <div class="anime-rating">★★★★★</div>
+            </div>
+            <div class="anime-item" onclick="playAnimeOST('Oshi no Ko')">
+                <span class="anime-emoji">🎭</span>
+                <div class="anime-name">Oshi no Ko</div>
+                <div class="anime-genre">Drama/Supernatural</div>
+                <div class="anime-rating">★★★★☆</div>
+            </div>
+            <div class="anime-item" onclick="playAnimeOST('Your Name')">
+                <span class="anime-emoji">🌸</span>
+                <div class="anime-name">Your Name</div>
+                <div class="anime-genre">Romance/Fantasy</div>
+                <div class="anime-rating">★★★★★</div>
+            </div>
+            <div class="anime-item" onclick="playAnimeOST('Evangelion')">
+                <span class="anime-emoji">🤖</span>
+                <div class="anime-name">Evangelion</div>
+                <div class="anime-genre">Mecha/Psychological</div>
+                <div class="anime-rating">★★★★☆</div>
+            </div>
+            <div class="anime-item" onclick="playAnimeOST('Demon Slayer')">
+                <span class="anime-emoji">🔥</span>
+                <div class="anime-name">Demon Slayer</div>
+                <div class="anime-genre">Action/Supernatural</div>
+                <div class="anime-rating">★★★★★</div>
+            </div>
+            <div class="anime-item" style="border-style: dashed;">
+                <span class="anime-emoji">➕</span>
+                <div class="anime-name">Dan Masih Banyak</div>
+                <div class="anime-genre">Too Many to List</div>
+                <div class="anime-rating">∞</div>
             </div>
         </div>
     </section>
@@ -813,35 +2313,35 @@
                 <p style="font-size: 1.1rem; margin-bottom: 2rem;">Terbuka untuk project, diskusi teknologi, atau sekadar ngobrol tentang anime dan coding.</p>
                 
                 <div class="contact-links">
-                    <a href="https://wa.me/6285817597752" class="contact-item" target="_blank">
+                    <a href="https://wa.me/6285817597752" class="contact-item" target="_blank" onclick="trackContact('WhatsApp')">
                         <div>
                             <div class="contact-label">WhatsApp</div>
                             <div class="contact-value">0858-1759-7752</div>
                         </div>
                     </a>
                     
-                    <a href="mailto:fruatremaou@gmail.com" class="contact-item">
+                    <a href="mailto:fruatremaou@gmail.com" class="contact-item" onclick="trackContact('Email')">
                         <div>
                             <div class="contact-label">Email</div>
                             <div class="contact-value">fruatremaou@gmail.com</div>
                         </div>
                     </a>
                     
-                    <a href="https://instagram.com/anunya_diitu" class="contact-item" target="_blank">
+                    <a href="https://instagram.com/anunya_diitu" class="contact-item" target="_blank" onclick="trackContact('Instagram')">
                         <div>
                             <div class="contact-label">Instagram</div>
                             <div class="contact-value">@anunya_diitu</div>
                         </div>
                     </a>
                     
-                    <a href="https://github.com/FruatreMaou" class="contact-item" target="_blank">
+                    <a href="https://github.com/FruatreMaou" class="contact-item" target="_blank" onclick="trackContact('GitHub')">
                         <div>
                             <div class="contact-label">GitHub</div>
                             <div class="contact-value">FruatreMaou</div>
                         </div>
                     </a>
                     
-                    <a href="https://whatsapp.com/channel/0029Vb8JrC33GJP0ejgQFf22" class="contact-item" target="_blank" style="border-color: var(--accent);">
+                    <a href="https://whatsapp.com/channel/0029Vb8JrC33GJP0ejgQFf22" class="contact-item" target="_blank" style="border-color: var(--accent);" onclick="trackContact('Channel')">
                         <div>
                             <div class="contact-label">WhatsApp Channel</div>
                             <div class="contact-value">Subscribe Channel</div>
@@ -867,12 +2367,420 @@
         <div class="footer-content">
             <div class="footer-logo">FRUATRE.MAOU</div>
             <p class="footer-text">Built with brutalist precision by Cahya Cipta Mauladin © 2025</p>
-            <p style="margin-top: 1rem; font-size: 0.8rem; opacity: 0.6;">"Keep coding, keep watching anime."</p>
+            <p class="footer-quote">"Keep coding, keep watching anime, keep chasing waifus."</p>
         </div>
     </footer>
 
+    <!-- Easter Egg Button -->
+    <div class="easter-egg" onclick="activateEasterEgg()" title="Click me!">🎌</div>
+
+    <!-- Music Player -->
+    <div class="music-player" id="music-player">
+        <div class="music-toggle" onclick="toggleMusicPlayer()">🎵</div>
+        <div class="music-header">
+            <div class="music-cover paused" id="music-cover">🎌</div>
+            <div class="music-info">
+                <div class="music-title" id="music-title">Select Anime</div>
+                <div class="music-artist" id="music-artist">Click anime to play OST</div>
+            </div>
+        </div>
+        <div class="music-progress">
+            <div class="music-progress-bar" id="music-progress"></div>
+        </div>
+        <div class="music-controls">
+            <button class="music-btn" onclick="prevTrack()">⏮</button>
+            <button class="music-btn play" onclick="togglePlay()" id="play-btn">▶</button>
+            <button class="music-btn" onclick="nextTrack()">⏭</button>
+        </div>
+        <div class="music-playlist" id="playlist">
+            <div class="playlist-item" data-anime="SAO" data-title="Crossing Field" data-artist="LiSA">🗡️ Crossing Field - LiSA</div>
+            <div class="playlist-item" data-anime="Majo no Tabitabi" data-title="Literature" data-artist="Reina Ueda">🧙‍♀️ Literature - Reina Ueda</div>
+            <div class="playlist-item" data-anime="Seraph" data-title="X.U." data-artist="SawanoHiroyuki">⚔️ X.U. - SawanoHiroyuki</div>
+            <div class="playlist-item" data-anime="Bocchi" data-title="Seishun Complex" data-artist="Kessoku Band">🎸 Seishun Complex - Kessoku Band</div>
+            <div class="playlist-item" data-anime="Death Note" data-title="The World" data-artist="Nightmare">🧠 The World - Nightmare</div>
+        </div>
+    </div>
+
     <script>
-        // Simple smooth scroll behavior for navigation
+        // Loading Screen
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            const progress = document.getElementById('loader-progress');
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loader.classList.add('hidden');
+                        showToast('🎌', 'Welcome Back!', 'Portfolio v2.0 loaded successfully');
+                        initTerminal();
+                    }, 500);
+                } else {
+                    width += Math.random() * 15;
+                    if (width > 100) width = 100;
+                    progress.style.width = width + '%';
+                }
+            }, 100);
+        });
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                icon.textContent = '🌙';
+                showToast('☀️', 'Light Mode', 'Brutalism cream activated');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                showToast('🌙', 'Dark Mode', 'Cyberpunk dark activated');
+            }
+        }
+
+        // Toast Notification
+        function showToast(icon, title, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                follower.style.left = e.clientX + 'px';
+                follower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+
+        document.querySelectorAll('a, button, .brutal-box, .waifu-card, .anime-item, .achievement, .music-btn, .playlist-item').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                timeZone: 'Asia/Jakarta'
+            });
+            const date = now.toLocaleDateString('id-ID', { 
+                weekday: 'short', 
+                day: 'numeric', 
+                month: 'short',
+                timeZone: 'Asia/Jakarta'
+            });
+            
+            document.getElementById('clock').textContent = time;
+            document.getElementById('date').textContent = date + ' WIB';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Background Particles
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const particles = [];
+        const particleCount = 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = Math.random() > 0.5 ? '#ff2a2a' : '#0a0a0a';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = 0.1;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Live Terminal
+        const terminalLines = [
+            { text: '➜ npm install waifu-engine', delay: 500 },
+            { text: '✓ Package installed successfully', delay: 800 },
+            { text: '➜ git commit -m "feat: add anime streaming platform"', delay: 1200 },
+            { text: '✓ 7 files changed, 420 insertions(+)', delay: 1500 },
+            { text: '➜ ssh fruatre@server', delay: 2000 },
+            { text: '✓ Connected to production server', delay: 2300 },
+            { text: '➜ pm2 status', delay: 2800 },
+            { text: '✓ All systems operational', delay: 3100 },
+            { text: '➜ echo "Hello, World!"', delay: 3600 },
+            { text: 'Hello, World!', delay: 3900 },
+            { text: '➜ _', delay: 4000 }
+        ];
+
+        function initTerminal() {
+            const terminal = document.getElementById('terminal-body');
+            terminal.innerHTML = '';
+            
+            terminalLines.forEach((line, index) => {
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.className = 'terminal-line show';
+                    div.innerHTML = line.text;
+                    terminal.appendChild(div);
+                    terminal.scrollTop = terminal.scrollHeight;
+                    
+                    if (index === terminalLines.length - 1) {
+                        const cursor = document.createElement('span');
+                        cursor.className = 'cursor-blink';
+                        div.appendChild(cursor);
+                    }
+                }, line.delay);
+            });
+        }
+
+        // GitHub Graph
+        function generateGitHubGraph() {
+            const graph = document.getElementById('github-graph');
+            const weeks = 52;
+            const days = 7;
+            
+            for (let w = 0; w < weeks; w++) {
+                for (let d = 0; d < days; d++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'graph-cell';
+                    
+                    // Random activity level
+                    const rand = Math.random();
+                    if (rand > 0.9) cell.classList.add('level-4');
+                    else if (rand > 0.75) cell.classList.add('level-3');
+                    else if (rand > 0.5) cell.classList.add('level-2');
+                    else if (rand > 0.3) cell.classList.add('level-1');
+                    
+                    // Tooltip
+                    const date = new Date();
+                    date.setDate(date.getDate() - ((weeks - w) * 7 + (days - d)));
+                    cell.title = `${date.toDateString()}: ${cell.classList.contains('level-4') ? '20+' : cell.classList.contains('level-3') ? '15-19' : cell.classList.contains('level-2') ? '10-14' : cell.classList.contains('level-1') ? '1-9' : '0'} commits`;
+                    
+                    graph.appendChild(cell);
+                }
+            }
+        }
+        generateGitHubGraph();
+
+        // Waifu Interactions
+        function showWaifuToast(name) {
+            const messages = {
+                'Elaina': '✨ "I\'m the cutest witch in the world!"',
+                'Sinon': '🎯 "Target locked. No escape."',
+                'Shinoa': '💚 "Wanna play? I promise it won\'t hurt... much."'
+            };
+            showToast('❤️', `Best Girl: ${name}`, messages[name]);
+        }
+
+        function celebrateWaifu(name) {
+            // Create confetti effect
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.textContent = '❤️';
+                    heart.style.position = 'fixed';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.top = '-50px';
+                    heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    heart.style.zIndex = '9999';
+                    heart.style.pointerEvents = 'none';
+                    heart.style.animation = 'fall ' + (Math.random() * 3 + 2) + 's linear';
+                    document.body.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 5000);
+                }, i * 50);
+            }
+            
+            showToast('🎉', 'Waifu Love!', `${name} appreciates your devotion!`);
+        }
+
+        // Add fall animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                to {
+                    transform: translateY(100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Music Player
+        let currentTrack = 0;
+        let isPlaying = false;
+        let progressInterval;
+        let currentProgress = 0;
+
+        const tracks = [
+            { anime: 'SAO', title: 'Crossing Field', artist: 'LiSA', emoji: '🗡️' },
+            { anime: 'Majo no Tabitabi', title: 'Literature', artist: 'Reina Ueda', emoji: '🧙‍♀️' },
+            { anime: 'Seraph', title: 'X.U.', artist: 'SawanoHiroyuki', emoji: '⚔️' },
+            { anime: 'Bocchi', title: 'Seishun Complex', artist: 'Kessoku Band', emoji: '🎸' },
+            { anime: 'Death Note', title: 'The World', artist: 'Nightmare', emoji: '🧠' }
+        ];
+
+        function toggleMusicPlayer() {
+            const player = document.getElementById('music-player');
+            player.classList.toggle('open');
+        }
+
+        function playAnimeOST(animeName) {
+            const track = tracks.find(t => t.anime === animeName) || tracks[0];
+            document.getElementById('music-title').textContent = track.title;
+            document.getElementById('music-artist').textContent = track.artist;
+            document.getElementById('music-cover').textContent = track.emoji;
+            
+            // Update playlist active state
+            document.querySelectorAll('.playlist-item').forEach((item, index) => {
+                if (item.dataset.anime === animeName) {
+                    item.classList.add('active');
+                    currentTrack = index;
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            if (!isPlaying) {
+                togglePlay();
+            }
+            
+            showToast(track.emoji, 'Now Playing', `${track.title} - ${track.artist}`);
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('play-btn');
+            const cover = document.getElementById('music-cover');
+            
+            if (isPlaying) {
+                btn.textContent = '⏸';
+                cover.classList.remove('paused');
+                startProgress();
+            } else {
+                btn.textContent = '▶';
+                cover.classList.add('paused');
+                clearInterval(progressInterval);
+            }
+        }
+
+        function startProgress() {
+            clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                currentProgress += 0.5;
+                if (currentProgress >= 100) {
+                    currentProgress = 0;
+                    nextTrack();
+                }
+                document.getElementById('music-progress').style.width = currentProgress + '%';
+            }, 100);
+        }
+
+        function nextTrack() {
+            currentTrack = (currentTrack + 1) % tracks.length;
+            const track = tracks[currentTrack];
+            playAnimeOST(track.anime);
+        }
+
+        function prevTrack() {
+            currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+            const track = tracks[currentTrack];
+            playAnimeOST(track.anime);
+        }
+
+        // Playlist click handlers
+        document.querySelectorAll('.playlist-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentTrack = index;
+                playAnimeOST(item.dataset.anime);
+            });
+        });
+
+        // Contact Tracking
+        function trackContact(type) {
+            showToast('📞', 'Contact Clicked', `Opening ${type}...`);
+        }
+
+        // Typing Effect for Hero
+        const text = document.getElementById('typing-text');
+        const originalText = text.innerHTML;
+        text.innerHTML = '';
+        
+        let i = 0;
+        const typeWriter = () => {
+            if (i < originalText.length) {
+                text.innerHTML = originalText.substring(0, i+1);
+                i++;
+                setTimeout(typeWriter, 30);
+            }
+        };
+        setTimeout(typeWriter, 1000);
+
+        // Smooth Scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -882,22 +2790,105 @@
             });
         });
 
-        // Add animation on scroll
+        // Scroll Animations
         const observerOptions = {
-            threshold: 0.1
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
         };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    
+                    // Animate skill bars
+                    if (entry.target.classList.contains('skill-category')) {
+                        entry.target.querySelectorAll('.skill-progress').forEach(bar => {
+                            const width = bar.style.width;
+                            bar.style.width = '0';
+                            setTimeout(() => bar.style.width = width, 200);
+                        });
+                    }
                 }
             });
         }, observerOptions);
 
-        document.querySelectorAll('.project-card, .timeline-item, .tool-item').forEach((el) => {
+        document.querySelectorAll('.project-card, .timeline-item, .skill-category, .waifu-card, .anime-item, .achievement').forEach((el) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
             observer.observe(el);
         });
+
+        // Konami Code
+        let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    document.body.style.filter = 'hue-rotate(180deg) saturate(2)';
+                    showToast('🎌', 'WAIFU MODE ACTIVATED!', 'Elaina, Sinon, Shinoa approve your coding skills!');
+                    
+                    // Matrix rain effect
+                    const matrix = document.createElement('div');
+                    matrix.style.cssText = `
+                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                        background: rgba(0,0,0,0.8); color: #0f0; font-family: monospace;
+                        font-size: 14px; z-index: 9999; pointer-events: none;
+                        display: flex; align-items: center; justify-content: center;
+                        flex-direction: column;
+                    `;
+                    matrix.innerHTML = '<div style="font-size: 24px; margin-bottom: 20px;">⛩️ ENTERING THE MATRIX ⛩️</div><div>Wake up, Neo...</div>';
+                    document.body.appendChild(matrix);
+                    
+                    setTimeout(() => {
+                        matrix.remove();
+                        document.body.style.filter = '';
+                    }, 3000);
+                    
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+
+        // Easter Egg
+        function activateEasterEgg() {
+            const emojis = ['🎌', '⛩️', '🏯', '🌸', '🗡️', '✨', '💫', '🌟'];
+            const btn = document.querySelector('.easter-egg');
+            
+            let count = 0;
+            const interval = setInterval(() => {
+                btn.textContent = emojis[count % emojis.length];
+                btn.style.transform = `scale(${1 + (count * 0.1)}) rotate(${count * 45}deg)`;
+                count++;
+                
+                if (count >= 8) {
+                    clearInterval(interval);
+                    btn.textContent = '🎌';
+                    btn.style.transform = '';
+                    showToast('🎁', 'Secret Unlocked!', 'You found the hidden feature!');
+                }
+            }, 100);
+        }
+
+        // Random Anime Quote Console
+        const quotes = [
+            "The world isn't beautiful, therefore it is. — Kino no Tabi",
+            "I don't know everything, I just know what I know. — Tsubasa Hanekawa",
+            "Whatever you lose, you'll find it again. — Shouko Nishimiya",
+            "If you don't like your destiny, don't accept it. — Naruto",
+            "People die if they are killed. — Shirou Emiya",
+            "Omae wa mou shindeiru. — Kenshiro"
+        ];
+
+        console.log('%c 🎌 ANIME QUOTE OF THE SESSION:', 'color: #ff2a2a; font-size: 20px; font-weight: bold; text-shadow: 2px 2px 0 #000;');
+        console.log('%c ' + quotes[Math.floor(Math.random() * quotes.length)], 'color: #0a0a0a; font-size: 16px; font-style: italic; background: #f0f0e8; padding: 10px; border: 3px solid #0a0a0a;');
+        console.log('%c 🔥 Try the Konami Code: ↑↑↓↓←→←→BA', 'color: #ff2a2a; font-size: 12px;');
     </script>
 </body>
 </html>
